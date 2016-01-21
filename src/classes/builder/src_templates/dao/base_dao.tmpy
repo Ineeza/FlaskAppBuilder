@@ -1,0 +1,15 @@
+# -*- coding:utf-8 -*-
+
+from .._settings import db_session
+
+class DAO(object):
+
+    session = db_session
+
+    @classmethod
+    def commit(cls):
+        try:
+            cls.session.commit()
+        except Exception as e:
+            cls.session.rollback()
+

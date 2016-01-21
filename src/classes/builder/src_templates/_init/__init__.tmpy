@@ -1,0 +1,8 @@
+# -*- coding:utf-8 -*-
+
+{% if imports -%}{% for import_obj in imports -%}
+from {{ import_obj.from_name }} import {{ import_obj.import_names | join(', ') }}
+{% endfor %}{%- endif %}
+{% if blueprints -%}
+blueprints = [ {{ blueprints | join(', ') }} ]
+{%- endif %}

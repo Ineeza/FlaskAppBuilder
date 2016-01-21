@@ -1,0 +1,12 @@
+# -*- coding:utf-8 -*-
+
+#from ..table import 
+from ..dao import DAO
+
+class {% if service_obj -%} {{ service_obj.service_class_name }} {%- endif %}(object):
+
+    @classmethod
+    def test(cls):
+        # implement service methods, by using Table, DAO classes.
+        pass
+

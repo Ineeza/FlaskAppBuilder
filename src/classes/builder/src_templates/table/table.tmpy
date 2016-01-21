@@ -1,0 +1,32 @@
+# -*- coding:utf-8 -*-
+
+from .._settings import Model
+from sqlalchemy import Column, Integer, BigInteger, Float, String, BLOB, LargeBinary, DateTime, Date, Time, func
+# (unsigned=True), primary_key=True, nullable=False, unique=True, autoincrement=True
+
+class {% if table_obj -%} {{ table_obj.table_class_name }} {%- endif %}(Model):
+    __tablename__ = '{% if table_obj -%} {{ table_obj.table_name }} {%- endif %}'
+
+    {% if table_obj -%}{% for clm_o in table_obj.columns -%}
+    {{ clm_o.column_name }} = Column('{{ clm_o.column_name }}', {{ clm_o.column_type }}
+        {%- if clm_o.primary_key -%} , primary_key=True {%- endif %}
+        {%- if not clm_o.nullable -%} , nullable=False {%- endif %}
+        {%- if clm_o.autoincrement -%} , autoincrement=True {%- endif %})
+    {% endfor %}{%- endif %}
+    def __init__(self
+        {%- if table_obj -%}
+            {%- for clm_o in table_obj.columns -%}
+                {%- if not clm_o.autoincrement -%}
+                    {%- if clm_o.default == '' -%}
+            , {{ clm_o.column_name }}=''
+                    {%- else -%}
+            , {{ clm_o.column_name }}={{ clm_o.default }}
+                    {%- endif -%}
+                {%- endif -%}
+            {%- endfor -%}):
+            {%- for clm_o in table_obj.columns -%}
+                {%- if not clm_o.autoincrement %}
+        self.{{ clm_o.column_name }} = {{ clm_o.column_name }}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}

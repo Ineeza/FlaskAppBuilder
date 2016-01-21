@@ -1,0 +1,80 @@
+# -*- coding:utf-8 -*-
+
+import os, socket
+
+''' app location. '''
+ON_MASTER = False # socket.gethostname()[0:3] == 'ip-' # __IMPLE__, __CONF_SETTINGS__
+MASTER_HOST = '0.0.0.0'
+#LOCAL_HOST = '127.0.0.1'
+LOCAL_HOST = socket.gethostbyname(socket.gethostname())
+
+''' app-run mode. '''
+DEBUG = True
+USE_DEBUGGER = False
+ASSETS_DEBUG = True
+
+if ON_MASTER:
+    DEBUG = False
+    USE_DEBUGGER = False
+    ASSETS_DEBUG = False
+
+''' log setting. '''
+LOG_COLOR_RED = '\033[91m'
+LOG_COLOR_GREEN = '\033[92m'
+LOG_COLOR_YELLOW = '\033[93m'
+LOG_COLOR_END = '\033[0m'
+
+''' DB settings. '''
+DB_TYPE = 'mysql'
+DB_OPTION = '?charset=utf8'
+DB_CONNECT_OPTIONS = {}
+
+# should not rewrite this definitions.
+DB_HOST = ''
+DB_USER = ''
+DB_PASS = ''
+DB_SCHEMA = ''
+
+if DB_HOST:
+    db_notice = 'you may hardcode db-settings in webconfig file. should make webconfig_local file for version control.'
+    print(LOG_COLOR_RED + db_notice + LOG_COLOR_END)
+
+# add file 'webconfig_local.py' in ignore, for local testing. it'll be imported below.
+'''
+$ .webconfig_local.py
+
+# -*- coding:utf-8 -*-
+
+DB_HOST = '127.0.0.1'
+DB_USER = 'user'
+DB_PASS = 'pass'
+DB_SCHEMA = 'scheme'
+
+'''
+
+if ON_MASTER:
+    # '__CONF_SETTINGS__'
+    try:
+        from webconfig_master import *
+    except ImportError:
+        db_notice = 'you may neglect to set db-config, add webconfig_master file.'
+        print(LOG_COLOR_RED + db_notice + LOG_COLOR_END)
+        pass
+else:
+    try:
+        from webconfig_local import *
+    except ImportError:
+        db_notice = 'you may neglect to set db-config, add webconfig_local file.'
+        print(LOG_COLOR_RED + db_notice + LOG_COLOR_END)
+        pass
+
+DATABASE_URI = '%(type)s://%(user)s:%(pass)s@%(host)s/%(scheme)s%(option)s' \
+    % { 'type': DB_TYPE, 'user': DB_USER, 'pass': DB_PASS, 'host': DB_HOST, 'scheme': DB_SCHEMA, 'option': DB_OPTION }
+
+
+''' keys for each APIs, or app-self security. '''
+
+#API_SECRET_KEY = '_______'
+
+#WTF_CSRF_ENABLED = False
+#WTF_CSRF_SECRET_KEY = '_______'

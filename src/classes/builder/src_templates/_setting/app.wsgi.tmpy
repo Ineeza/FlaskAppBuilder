@@ -1,0 +1,13 @@
+# -*- coding:utf-8 -*-
+
+import sys, socket, site
+
+ON_MASTER = socket.gethostname()[0:3] == 'ip-'
+
+if ON_MASTER:
+	PROJECT_ROOT = '{% if wsgi_project_root -%} {{ wsgi_project_root }} {%- endif %}'
+	sys.path.append(PROJECT_ROOT)
+	VIRTUALENV_SITE = '{% if wsgi_vertual_env -%} {{ wsgi_vertual_env }} {%- endif %}'
+	site.addsitedir(VIRTUALENV_SITE)
+
+from run import app as application

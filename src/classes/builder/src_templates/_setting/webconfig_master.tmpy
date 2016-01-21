@@ -1,0 +1,7 @@
+# -*- coding:utf-8 -*-
+
+DB_HOST = '{% if db_master_host -%} {{ db_master_host }} {%- endif %}'
+DB_USER = '{% if db_master_user -%} {{ db_master_user }} {%- endif %}'
+DB_PASS = '{% if db_master_pass -%} {{ db_master_pass }} {%- endif %}'
+DB_SCHEMA = '{% if db_master_scheme -%} {{ db_master_scheme }} {%- endif %}'
+

@@ -65,7 +65,7 @@ DAO use Table
 + webconfig_local.py
 + webconfig_master.py
 - classes
-  + __init__.py
+  - __init__.py
   + controller
     + __init__.py [rewrite]
     + [each_controller].py

@@ -1,0 +1,19 @@
+# -*- coding:utf-8 -*-
+
+from flask import Blueprint, render_template, redirect, request, jsonify
+
+#from classes.model import # Services
+
+{% if controller_obj -%} {{ controller_obj.blueprint }} = Blueprint('{{ controller_obj.controller_name }}', __name__
+    {%- if controller_obj.url_prefix -%}
+        , url_prefix='{{ controller_obj.url_prefix }}'
+    {%- endif -%}
+)
+
+@{{ controller_obj.blueprint }}.route('/', methods=['GET', 'POST'])
+def {{ controller_obj.controller_name }}_index():
+    
+    return render_template('')
+
+{%- endif %}
+

@@ -1,0 +1,69 @@
+# -*- coding:utf-8 -*-
+
+from ._dao import DAO
+from ..table import {% if dao_obj -%} {{ dao_obj.table_class_name }} {%- endif %}
+
+class {% if dao_obj -%} {{ dao_obj.dao_class_name }} {%- endif %}(DAO):
+
+    {# table has one primary_key, generate [get, exist] methods. -#}
+
+    {%- if dao_obj and dao_obj.primary_keys and dao_obj.primary_keys|length == 1 -%}
+    @classmethod
+    def get_{{ dao_obj.table_name }}(cls, {{ dao_obj.primary_keys[0] }}):
+        {{ dao_obj.table_name }} = cls.session.query({{ dao_obj.table_class_name }})\
+                .filter({{ dao_obj.table_class_name }}.{{ dao_obj.primary_keys[0] }} == {{ dao_obj.primary_keys[0] }}).one()
+        return {{ dao_obj.table_name }}
+
+    @classmethod
+    def exist_{{ dao_obj.table_name }}(cls, {{ dao_obj.primary_keys[0] }}):
+        {{ dao_obj.table_name }} = cls.session.query({{ dao_obj.table_class_name }})\
+                .filter({{ dao_obj.table_class_name }}.{{ dao_obj.primary_keys[0] }} == {{ dao_obj.primary_keys[0] }}).first()
+        if {{ dao_obj.table_name }}:
+            return True
+        return False
+    {%- else -%}
+    '''
+    @classmethod
+    def get_{{ dao_obj.table_name }}(cls, args):
+        {{ dao_obj.table_name }} = cls.session.query({{ dao_obj.table_class_name }})\
+                .filter( """ filter """ ).one()
+        return {{ dao_obj.table_name }}
+
+    @classmethod
+    def exist_{{ dao_obj.table_name }}(cls, args):
+        {{ dao_obj.table_name }} = cls.session.query({{ dao_obj.table_class_name }})\
+                .filter( """ filter """ ).first()
+        if {{ dao_obj.table_name }}:
+            return True
+        return False
+    '''
+    {%- endif %}
+
+    {% if dao_obj -%}
+    {%- set first_args = True -%}
+    @classmethod
+    def add_{{ dao_obj.table_name }}(cls
+        {%- for clm_o in dao_obj.columns -%}
+            {%- if not clm_o.autoincrement -%}
+                {%- if clm_o.default == '' -%}
+                    , {{ clm_o.column_name }}=''
+                {%- else -%}
+                    , {{ clm_o.column_name }}={{ clm_o.default }}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor -%}):
+        {{ dao_obj.table_name }} = {{ dao_obj.table_class_name }}(
+            {%- for clm_o in dao_obj.columns -%}
+                {%- if not clm_o.autoincrement -%}
+                    {%- if first_args -%}{%- set first_args = False -%}
+                        {{ clm_o.column_name }}={{ clm_o.column_name }}
+                    {%- else -%}
+                        , {{ clm_o.column_name }}={{ clm_o.column_name }}
+                    {%- endif -%}
+                {%- endif -%}
+            {%- endfor -%})
+        cls.session.add({{ dao_obj.table_name }})
+        cls.commit()
+        return {{ dao_obj.table_name }}
+    {%- endif %}
+
